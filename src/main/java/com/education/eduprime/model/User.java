@@ -1,6 +1,7 @@
 package com.education.eduprime.model;
 
 import com.education.eduprime.utils.AuditModel;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,8 @@ public class User extends AuditModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "username")
+    @JsonProperty("username")
     private String userName;
 
     @Column(name = "age")
