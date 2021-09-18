@@ -130,4 +130,73 @@ public class UserPresenterTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
     }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void updateNotFoundUser() throws ResourceNotFoundException {
+        Random randomIds = new Random();
+        String uri = "http://localhost:" + port + "/api/v1/users/" + randomIds.nextInt();
+        RestTemplate restTemplate = restTemplateBuilder
+                .errorHandler(new RestTemplateErrorResponseHandler())
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Setup payload
+        JSONObject userJsonObject = new JSONObject();
+        userJsonObject.put("name", "John Mir");
+        userJsonObject.put("address", "California");
+        userJsonObject.put("age", 28);
+
+        HttpEntity<String> request =
+                new HttpEntity<String>(userJsonObject.toString(), headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                uri, HttpMethod.PUT, request, String.class);
+
+        // Assertion
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+    }
+
+    @Test
+    public void deleteFoundUser() {
+        User user = new User();
+        user.setUserName("Andrew");
+        user.setAddress("Yogyakarta");
+        user.setAge(30);
+
+        userRepository.save(user);
+
+        String uri = "http://localhost:" + port + "/api/v1/users/" + user.getId();
+        RestTemplate restTemplate = restTemplateBuilder
+                .errorHandler(new RestTemplateErrorResponseHandler())
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                uri, HttpMethod.DELETE, null, String.class);
+
+        // Assertion
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void deleteNotFoundUser() throws ResourceNotFoundException {
+        Random randomIds = new Random();
+        String uri = "http://localhost:" + port + "/api/v1/users/" + randomIds.nextInt();
+        RestTemplate restTemplate = restTemplateBuilder
+                .errorHandler(new RestTemplateErrorResponseHandler())
+                .build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                uri, HttpMethod.DELETE, null, String.class);
+
+        // Assertion
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+    }
 }
