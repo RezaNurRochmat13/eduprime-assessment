@@ -5,6 +5,8 @@ import com.education.eduprime.model.dto.DetailUserDto;
 import com.education.eduprime.model.dto.ListUserDto;
 import com.education.eduprime.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,7 +19,7 @@ public class UserPresenter {
     @Autowired
     private UserServiceImpl userService;
 
-    @GetMapping("/users")
+    @GetMapping(value = "/users", produces = "application/json")
     public Map<String, Object> allUsers() {
         Map<String, Object> map = new HashMap<>();
         List<ListUserDto> listUserDtos = userService.findAllUsers();
@@ -36,6 +38,7 @@ public class UserPresenter {
     }
 
     @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
     public Map<String, Object> createUser(@RequestBody User payload) {
         Map<String, Object> map = new HashMap<>();
 
