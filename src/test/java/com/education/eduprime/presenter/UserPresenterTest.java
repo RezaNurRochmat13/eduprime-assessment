@@ -1,4 +1,4 @@
-package com.education.eduprime;
+package com.education.eduprime.presenter;
 
 import com.education.eduprime.model.User;
 import com.education.eduprime.repository.UserRepository;
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class UserPresenterTests {
+public class UserPresenterTest {
     @LocalServerPort
     private int port;
 
