@@ -7,7 +7,12 @@ import com.education.eduprime.repository.UserRepository;
 import com.education.eduprime.utils.ModelMapperUtil;
 import com.education.eduprime.utils.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +26,10 @@ public class UserServiceImpl implements UserService {
     private ModelMapperUtil mapperUtil;
 
     @Override
-    public List<ListUserDto> findAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<ListUserDto> usersDtos = mapperUserToDto(users);
+    public Page<ListUserDto> findAllUsers(Integer page, Integer size) {
+        Pageable pageRequest = PageRequest.of(page, size);
+        Page<User> users = userRepository.findAll(pageRequest);
+        Page<ListUserDto> usersDtos = mapperUserToDto(users, pageRequest);
 
         return usersDtos;
     }
@@ -64,10 +70,10 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    private List<ListUserDto> mapperUserToDto(List<User> users) {
+    private Page<ListUserDto> mapperUserToDto(Page<User> users, Pageable pageable) {
         List<ListUserDto> listUserDtos = new ArrayList<>();
 
-        for(User user: users) {
+        for(User user: users.getContent()) {
             ListUserDto listUserDto = mapperUtil
                     .modelMapperUtility()
                     .map(user, ListUserDto.class);
@@ -78,7 +84,7 @@ public class UserServiceImpl implements UserService {
             listUserDtos.add(listUserDto);
         }
 
-        return listUserDtos;
+        return new PageImpl<ListUserDto>(listUserDtos, pageable, listUserDtos.size());
     }
 
     private DetailUserDto mapperUserToDto(User user) {

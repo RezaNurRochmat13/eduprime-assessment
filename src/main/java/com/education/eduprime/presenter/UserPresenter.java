@@ -5,12 +5,11 @@ import com.education.eduprime.model.dto.DetailUserDto;
 import com.education.eduprime.model.dto.ListUserDto;
 import com.education.eduprime.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,12 +18,17 @@ public class UserPresenter {
     @Autowired
     private UserServiceImpl userService;
 
-    @GetMapping(value = "/users", produces = "application/json")
-    public Map<String, Object> allUsers() {
+    @GetMapping(
+            value = "/users",
+            produces = "application/json")
+    public Map<String, Object> allUsers(@RequestParam(defaultValue = "0") Integer page,
+                                        @RequestParam(defaultValue = "10") Integer size) {
         Map<String, Object> map = new HashMap<>();
-        List<ListUserDto> listUserDtos = userService.findAllUsers();
+        Page<ListUserDto> listUserDtos = userService.findAllUsers(page, size);
 
-        map.put("data", listUserDtos);
+        map.put("data", listUserDtos.getContent());
+        map.put("total", listUserDtos.getTotalElements());
+        map.put("page", listUserDtos.getTotalPages());
         return map;
     }
 

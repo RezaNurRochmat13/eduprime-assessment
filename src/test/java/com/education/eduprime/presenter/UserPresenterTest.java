@@ -34,8 +34,33 @@ public class UserPresenterTest {
     private RestTemplateBuilder restTemplateBuilder;
 
     @Test
-    public void getAllUsers() throws Exception {
+    public void getAllUsersWithoutPagination() throws Exception {
+        User user = new User();
+        user.setUserName("Andrew");
+        user.setAddress("Yogyakarta");
+        user.setAge(30);
+
+        userRepository.save(user);
+
         String uri = "http://localhost:" + port + "/api/v1/users";
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+
+        // Assertion
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+    }
+
+    @Test
+    public void getAllUsersWithPagination() {
+        User user = new User();
+        user.setUserName("Andrew");
+        user.setAddress("Yogyakarta");
+        user.setAge(30);
+
+        userRepository.save(user);
+
+        String uri = "http://localhost:" + port + "/api/v1/users?" + "page=1&size=10";
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
 
