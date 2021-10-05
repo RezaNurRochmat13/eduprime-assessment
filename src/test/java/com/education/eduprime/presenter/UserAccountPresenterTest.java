@@ -42,10 +42,7 @@ public class UserAccountPresenterTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        User user = new User();
-        user.setUserName("Andrew");
-        user.setAddress("Yogyakarta");
-        user.setAge(30);
+        User user = new User("Andrew", 30, "Sleman");
 
         userRepository.save(user);
 

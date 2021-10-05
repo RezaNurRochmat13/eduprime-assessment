@@ -3,6 +3,7 @@ package com.education.eduprime.model;
 import com.education.eduprime.utils.AuditModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class User extends AuditModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +27,10 @@ public class User extends AuditModel {
 
     @Column(name = "address")
     private String address;
+
+    public User(String userName, Integer age, String address) {
+        this.userName = userName;
+        this.age = age;
+        this.address = address;
+    }
 }

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
-public class ListUserDto {
+public class ListUserDto implements Serializable {
     @JsonProperty("username")
     private String userName;
 
@@ -15,4 +17,7 @@ public class ListUserDto {
 
     @JsonProperty("address")
     private String address;
+
+    @JsonProperty("balances")
+    private Integer balances;
 }

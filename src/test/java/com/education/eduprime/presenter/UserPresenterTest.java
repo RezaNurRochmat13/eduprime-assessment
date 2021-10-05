@@ -35,12 +35,11 @@ public class UserPresenterTest {
 
     @Test
     public void getAllUsersWithoutPagination() throws Exception {
-        User user = new User();
-        user.setUserName("Andrew");
-        user.setAddress("Yogyakarta");
-        user.setAge(30);
+        User userAndrew = new User("Andrew", 30, "Sleman");
+        User userAndic = new User("Andic", 30, "Yogya");
 
-        userRepository.save(user);
+        userRepository.save(userAndrew);
+        userRepository.save(userAndic);
 
         String uri = "http://localhost:" + port + "/api/v1/users";
         RestTemplate restTemplate = new RestTemplate();
@@ -53,12 +52,18 @@ public class UserPresenterTest {
 
     @Test
     public void getAllUsersWithPagination() {
-        User user = new User();
-        user.setUserName("Andrew");
-        user.setAddress("Yogyakarta");
-        user.setAge(30);
+        User user1 = new User("Andrew", 20, "Jakarta");
+        User user2 = new User("Andrew", 20, "Jakarta");
+        User user3 = new User("Andrew", 20, "Jakarta");
+        User user4 = new User("Andrew", 20, "Jakarta");
+        User user5 = new User("Andrew", 20, "Jakarta");
 
-        userRepository.save(user);
+
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
+        userRepository.save(user4);
+        userRepository.save(user5);
 
         String uri = "http://localhost:" + port + "/api/v1/users?" + "page=1&size=10";
         RestTemplate restTemplate = new RestTemplate();
@@ -71,10 +76,7 @@ public class UserPresenterTest {
 
     @Test
     public void getDetailFoundUsers() throws Exception {
-        User user = new User();
-        user.setUserName("Andrew");
-        user.setAddress("Yogyakarta");
-        user.setAge(30);
+        User user = new User("Andrew", 20, "Jakarta");
 
         userRepository.save(user);
 
@@ -125,10 +127,7 @@ public class UserPresenterTest {
 
     @Test
     public void updateFoundUser() {
-        User user = new User();
-        user.setUserName("Andrew");
-        user.setAddress("Yogyakarta");
-        user.setAge(30);
+        User user = new User("Andrew", 20, "Jakarta");
 
         userRepository.save(user);
 
@@ -185,10 +184,7 @@ public class UserPresenterTest {
 
     @Test
     public void deleteFoundUser() {
-        User user = new User();
-        user.setUserName("Andrew");
-        user.setAddress("Yogyakarta");
-        user.setAge(30);
+        User user = new User("Andrew", 20, "Jakarta");
 
         userRepository.save(user);
 
