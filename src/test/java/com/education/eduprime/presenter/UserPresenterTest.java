@@ -4,11 +4,15 @@ import com.education.eduprime.model.User;
 import com.education.eduprime.repository.UserRepository;
 import com.education.eduprime.utils.ResourceNotFoundException;
 import com.education.eduprime.utils.RestTemplateErrorResponseHandler;
-import net.minidev.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -16,13 +20,15 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class UserPresenterTest {
     @LocalServerPort
     private int port;
@@ -33,45 +39,49 @@ public class UserPresenterTest {
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
 
+    @Before
+    public void initData() {
+        List<User> users = Arrays.asList(
+                new User("Andrew", 21, "Jakarta"),
+                new User("Matthew", 22, "Banjarnegara"),
+                new User("Anderson", 23, "Yogya"),
+                new User("Sylvia", 22, "Solo"),
+                new User("Carolina", 22, "Blora"));
+
+        userRepository.saveAll(users);
+    }
+
+    @After
+    public void clearData() {
+        userRepository.deleteAll();
+    }
+
     @Test
     public void getAllUsersWithoutPagination() throws Exception {
-        User userAndrew = new User("Andrew", 30, "Sleman");
-        User userAndic = new User("Andic", 30, "Yogya");
-
-        userRepository.save(userAndrew);
-        userRepository.save(userAndic);
-
         String uri = "http://localhost:" + port + "/api/v1/users";
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
 
+        JSONObject jsonObject = new JSONObject(response.getBody());
+
         // Assertion
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+        assertEquals(5, jsonObject.getJSONArray("data").length());
     }
 
     @Test
-    public void getAllUsersWithPagination() {
-        User user1 = new User("Andrew", 20, "Jakarta");
-        User user2 = new User("Andrew", 20, "Jakarta");
-        User user3 = new User("Andrew", 20, "Jakarta");
-        User user4 = new User("Andrew", 20, "Jakarta");
-        User user5 = new User("Andrew", 20, "Jakarta");
+    public void getAllUsersWithPagination() throws Exception {
 
-
-        userRepository.save(user1);
-        userRepository.save(user2);
-        userRepository.save(user3);
-        userRepository.save(user4);
-        userRepository.save(user5);
-
-        String uri = "http://localhost:" + port + "/api/v1/users?" + "page=1&size=10";
+        String uri = "http://localhost:" + port + "/api/v1/users?" + "page=0&size=10";
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+        JSONObject jsonObject = new JSONObject(response.getBody());
 
         // Assertion
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
+        assertEquals(5, jsonObject.getJSONArray("data").length());
     }
 
     @Test
@@ -100,7 +110,7 @@ public class UserPresenterTest {
     }
 
     @Test
-    public void createNewUser() {
+    public void createNewUser() throws JSONException {
         String uri = "http://localhost:" + port + "/api/v1/users";
         RestTemplate restTemplate = restTemplateBuilder
                 .errorHandler(new RestTemplateErrorResponseHandler())
@@ -126,7 +136,7 @@ public class UserPresenterTest {
     }
 
     @Test
-    public void updateFoundUser() {
+    public void updateFoundUser() throws JSONException {
         User user = new User("Andrew", 20, "Jakarta");
 
         userRepository.save(user);
@@ -156,7 +166,7 @@ public class UserPresenterTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void updateNotFoundUser() throws ResourceNotFoundException {
+    public void updateNotFoundUser() throws ResourceNotFoundException, JSONException {
         Random randomIds = new Random();
         String uri = "http://localhost:" + port + "/api/v1/users/" + randomIds.nextInt();
         RestTemplate restTemplate = restTemplateBuilder
